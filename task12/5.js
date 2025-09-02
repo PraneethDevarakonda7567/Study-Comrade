@@ -1,0 +1,1 @@
+console.log(44 + 'study comrade' + 50 / 2);

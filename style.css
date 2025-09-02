@@ -1,0 +1,41 @@
+<style> 
+ body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        margin: 0;
+        padding: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    td {
+        border: solid blue;
+        padding: 10px;
+        text-align: center;
+        width:100px;
+        height: 20%;
+    }
+    .main-table{
+        border-collapse: collapse;
+        width: 100%;
+        text-align: center;
+        border:  solid blue;
+        background-color: pink;
+    }
+    .header-table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: lightblue;
+    }
+    .grid-container {
+  gap:100px;
+  display: grid;
+}
+.image-table {
+    width: 100%;
+    height:10px;
+    border-collapse: collapse;
+    background-color: lightyellow;
+}
+</style>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>task3</title>
+</head>
+<style>
+  body {
+    background-color: rgb(103, 186, 121)
+  }
+  header {
+    position:fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    color: rgb(156, 4, 4);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color:palevioletred;
+  }
+  .navigation {
+    display: flex;
+    gap: 20px;
+    margin-right: 20px;
+  }
+  button{
+    background-color:#4CAF50;
+    color:blue;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+</style>
+<body>
+  <header>
+   <h1 class="logo">login page</h1>
+   <nav class="navigation">
+    <a href="#">Home</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+    
+    <button class="button">login</button>
+   </nav>
+  </header>
+  <main>
+    <div style="display:flex;flex-direction: column; align-items: center; justify-content: center;height:80vh;">
+      <input type="text" placeholder="Username" style="margin: 15px; border-radius: 10px;">
+      <input type="password" placeholder="Password" style="margin: 15px; border-radius: 10px;">
+      <input type="email" placeholder="Email" style="margin: 15px; border-radius: 10px;">
+      <input type="number" placeholder="Age" style="margin: 15px; border-radius: 10px;">
+      <input type="date" placeholder="Date of Birth" style="margin: 15px; border-radius: 10px;">
+      <input type="number" placeholder="Phone Number" style="margin: 15px; border-radius: 10px;">
+      <input type="text" placeholder="Address" style="margin: 15px; border-radius: 10px;">
+      <input type="text" placeholder="designation" style="margin: 15px; border-radius: 10px;">
+      <label style="color:blue ;margin:15px;">
+        <input type="checkbox" style="margin-right: 10px;">show password
+      </label>
+      <button style="margin: 15px; padding: 10px 20px; border-radius: 10px; background-color: #4CAF50; color: white; border: none;">submit</button>
+      </div>
+  </main>
+  </body>
+</html>

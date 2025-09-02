@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Callback Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+        color: white;
+        background-color:cornflowerblue
+
+    }
+    .container {
+      max-width: 400px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 50px;
+      align-items: center;
+      background-color: lightgreen
+    }
+    label, input {
+      display: block;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      cursor: pointer;
+        background-color:lightsalmon;
+        border: none;
+        border-radius: 20px;    
+      } 
+    #output {
+      margin-top: 20px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>User Data Form</h2>
+    <label for="name">Enter your name:</label>
+    <input type="text" id="name">
+
+    <label for="age">Enter your age:</label>
+    <input type="number" id="age">
+
+    <label for="age">Click Submit to see the result:</label>
+
+    
+
+    <button onclick="getUserData(displayData)">Submit</button>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    // Function that gets data from user and calls a callback
+    function getUserData(callback) {
+      const name = document.getElementById("name").value;
+      const age = document.getElementById("age").value;
+
+      // Pass data to callback
+      callback(name, age);
+    }
+
+    // Callback function to display data
+    function displayData(name, age) {
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = `Hello ${name}, you are ${age} years old.`;
+    }
+  </script>
+</body>
+</html>
