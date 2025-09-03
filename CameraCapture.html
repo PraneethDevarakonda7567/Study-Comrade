@@ -1,0 +1,320 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Photo by Praneeth
+    </title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .camera-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        #video {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        #captureBtn {
+            background-color: #2ecc71;
+        }
+        
+        #captureBtn:hover {
+            background-color: #27ae60;
+        }
+        
+        #saveBtn {
+            background-color: #e74c3c;
+        }
+        
+        #saveBtn:hover {
+            background-color: #c0392b;
+        }
+        
+        #savedPhotos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .photo-container {
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .photo-actions {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 0;
+        }
+        
+        .photo-actions button {
+            padding: 5px 10px;
+            font-size: 14px;
+            margin: 0 5px;
+        }
+        
+        .status {
+            text-align: center;
+            margin: 15px 0;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .notice {
+            background-color: #fffde7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffd600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>smile plzz Capture</h1>
+        
+        <div class="notice">
+            <p>This application will request access to your camera. Please allow camera access when prompted to use this feature. All photos are saved locally in your browser.</p>
+        </div>
+        
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <div class="controls">
+                <button id="startBtn">Start Camera</button>
+                <button id="captureBtn" disabled>Capture Photo</button>
+                <button id="saveBtn" disabled>Save Photo</button>
+            </div>
+            <p class="status" id="status">Camera not started</p>
+        </div>
+        
+        <canvas id="canvas" style="display:none;"></canvas>
+        
+        <h2>Saved Photos</h2>
+        <div id="savedPhotos"></div>
+    </div>
+
+    <script>
+        // DOM elements
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const startBtn = document.getElementById('startBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const saveBtn = document.getElementById('saveBtn');
+        const statusEl = document.getElementById('status');
+        const savedPhotos = document.getElementById('savedPhotos');
+        
+        // State variables
+        let stream = null;
+        let currentPhoto = null;
+        
+        // Get saved photos from localStorage
+        const savedPhotosData = JSON.parse(localStorage.getItem('photos') || '[]');
+        
+        // Display saved photos on page load
+        displaySavedPhotos();
+        
+        // Event listeners
+        startBtn.addEventListener('click', startCamera);
+        captureBtn.addEventListener('click', capturePhoto);
+        saveBtn.addEventListener('click', savePhoto);
+        
+        // Start camera function
+        async function startCamera() {
+            try {
+                statusEl.textContent = "Starting camera...";
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: 'environment',
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }, 
+                    audio: false 
+                });
+                
+                video.srcObject = stream;
+                startBtn.disabled = true;
+                captureBtn.disabled = false;
+                statusEl.textContent = "Camera started - looking good!";
+            } catch (err) {
+                console.error("Camera error:", err);
+                statusEl.textContent = "Error accessing camera: " + err.message;
+            }
+        }
+        
+        // Capture photo function
+        function capturePhoto() {
+            if (!stream) return;
+            
+            // Set canvas dimensions to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw video frame to canvas
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get image data URL
+            currentPhoto = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Show preview
+            displayPhotoPreview(currentPhoto);
+            saveBtn.disabled = false;
+            
+            statusEl.textContent = "Photo captured - ready to save!";
+        }
+        
+        // Save photo function
+        function savePhoto() {
+            if (!currentPhoto) return;
+            
+            // Create new photo object with timestamp
+            const newPhoto = {
+                dataUrl: currentPhoto,
+                timestamp: new Date().toISOString()
+            };
+            
+            // Add to saved photos array
+            savedPhotosData.push(newPhoto);
+            
+            // Save to localStorage
+            localStorage.setItem('photos', JSON.stringify(savedPhotosData));
+            
+            // Update UI
+            displaySavedPhotos();
+            statusEl.textContent = `Photo saved! (Total: ${savedPhotosData.length})`;
+            
+            // Reset
+            currentPhoto = null;
+            saveBtn.disabled = true;
+        }
+        
+        // Display photo preview (pre-save)
+        function displayPhotoPreview(dataUrl) {
+            // Clear any existing preview
+            const existingPreview = document.querySelector('.photo-preview');
+            if (existingPreview) {
+                existingPreview.remove();
+            }
+            
+            // Create preview element
+            const previewContainer = document.createElement('div');
+            previewContainer.className = 'photo-preview photo-container';
+            
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            img.alt = "Recently captured photo preview";
+            
+            previewContainer.appendChild(img);
+            savedPhotos.prepend(previewContainer);
+        }
+        
+        // Display all saved photos
+        function displaySavedPhotos() {
+            savedPhotos.innerHTML = '';
+            
+            if (savedPhotosData.length === 0) {
+                savedPhotos.innerHTML = '<p class="status">No photos saved yet.</p>';
+                return;
+            }
+            
+            savedPhotosData.forEach((photo, index) => {
+                const photoContainer = document.createElement('div');
+                photoContainer.className = 'photo-container';
+                
+                const img = document.createElement('img');
+                img.src = photo.dataUrl;
+                img.alt = `Photo captured on ${new Date(photo.timestamp).toLocaleString()}`;
+                
+                const photoActions = document.createElement('div');
+                photoActions.className = 'photo-actions';
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.addEventListener('click', () => deletePhoto(index));
+                
+                photoActions.appendChild(deleteBtn);
+                photoContainer.appendChild(img);
+                photoContainer.appendChild(photoActions);
+                savedPhotos.appendChild(photoContainer);
+            });
+        }
+        
+        // Delete photo function
+        function deletePhoto(index) {
+            if (confirm("Are you sure you want to delete this photo?")) {
+                savedPhotosData.splice(index, 1);
+                localStorage.setItem('photos', JSON.stringify(savedPhotosData));
+                displaySavedPhotos();
+                statusEl.textContent = `Photo deleted. (Remaining: ${savedPhotosData.length})`;
+            }
+        }
+    </script>
+</body>
+</html>
